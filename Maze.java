@@ -6,6 +6,7 @@ public class Maze{
     private boolean animate;//false by default
     private int[][] moves;
     private int[] s;
+    private int path;
     /*Constructor loads a maze text file, and sets animate to false by default.
 
       1. The file contains a rectangular ascii maze, made with the following 4 characters:
@@ -19,6 +20,13 @@ public class Maze{
       3. When the file is not found OR the file is invalid (not exactly 1 E and 1 S) then:
          throw a FileNotFoundException or IllegalStateException
     */
+    public static void main(String[] args) throws FileNotFoundException{
+        Maze test = new Maze ("Mazel.txt");
+        System.out.println(test.s[0] + "," + test.s[1]);
+        System.out.println(test.solve());
+        System.out.println(test);
+
+    }
     public Maze(String filename) throws FileNotFoundException{
         File text = new File("Mazel.txt");
         // can be a path like: "/full/path/to/file.txt" or "../data/file.txt"
@@ -31,7 +39,6 @@ public class Maze{
             String line = inf.nextLine();
             x++;
             y = line.length();
-            System.out.println(line);//hopefully you can do other things with the line
         }
         maze = new char[x][y];
         //put into array
@@ -45,6 +52,7 @@ public class Maze{
         }
         animate = false;
         moves = new int[][] {{1,0},{0,1},{-1,0},{0,-1}};
+        path = 0;
     }
 
     private void wait(int millis){
@@ -64,7 +72,16 @@ public class Maze{
         System.out.println("\033[2J\033[1;1H");
     }
 
-
+    public String toString(){
+        String output = "";
+        for(char[] i: maze){
+            for (char j: i){
+                output += j + " ";
+            }
+            output += '\n';
+        }
+        return output;
+    }
     /*Wrapper Solve Function returns the helper function
       Note the helper function has the same name, but different parameters.
       Since the constructor exits when the file is not found or is missing an E or S, we can assume it exists.
@@ -96,26 +113,28 @@ public class Maze{
         if(animate){
             clearTerminal();
             System.out.println(this);
-            wait(20);
+            wait(100);
         }
 
         //COMPLETE SOLVE
-        maze[row][col] = '@';
         //if the knight placed is the last knight, meaning the board is full, then return true
-        if (maze[row][col] == 'E') return 0;
+        if (maze[row][col] == 'E') return 1;
+        if (maze[row][col] != ' ') return -1;
+
+        maze[row][col] = '@';
+        path++;
         //if not, branch out to next possible paths
         for (int[] i : moves){
             //System.out.println("yo");
             //check if the next move is within bounds and then branch out.
             //if that brach works then this branch works as well --> return true
-            if(maze[row + i[0]][col + i[1]] == '.' ||  maze[row + i[0]][col + i[1]] == '@' || maze[row + i[0]][col + i[1]] == '#'
-               && solve(row + i[0], col + i[1], level + 1) != -1){
-                return level + 1;
+            if(solve(row + i[0], col + i[1], level + 1) != -1){
+                return path;
             }
         }
         //if the branch fails, reset the spot to 0 and move on to other brances
         maze[row][col] = '.';
+        path--;
         return -1; //so it compiles
     }
-
 }
