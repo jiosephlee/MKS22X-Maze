@@ -28,7 +28,7 @@ public class Maze{
 
     }
     public Maze(String filename) throws FileNotFoundException{
-        File text = new File("Mazel.txt");
+        File text = new File(filename);
         // can be a path like: "/full/path/to/file.txt" or "../data/file.txt"
 
         //inf stands for the input file
@@ -117,7 +117,7 @@ public class Maze{
         }
 
         //COMPLETE SOLVE
-        //if the knight placed is the last knight, meaning the board is full, then return true
+        //if reached the end,  then return 1
         if (maze[row][col] == 'E') return 1;
         if (maze[row][col] != ' ') return -1;
 
